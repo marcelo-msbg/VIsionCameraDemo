@@ -73,7 +73,7 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.visioncamerademo"
+    namespace "com.visioncamerademo" // Add this line here!
     defaultConfig {
         applicationId "com.visioncamerademo"
         minSdkVersion rootProject.ext.minSdkVersion

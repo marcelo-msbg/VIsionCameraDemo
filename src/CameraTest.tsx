@@ -1,7 +1,24 @@
 import { Text, VStack } from "native-base";
 import { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { Camera, Frame, runAtTargetFps, useCameraDevice, useCameraFormat, useCameraPermission, useFrameProcessor } from "react-native-vision-camera";
+import { Platform, StyleSheet } from "react-native";
+import { Camera, Frame, VisionCameraProxy, runAtTargetFps, useCameraDevice, useCameraFormat, useCameraPermission, useFrameProcessor } from "react-native-vision-camera";
+
+let plugin:any = null;
+
+// Apply the plugin to the equivalent OS.
+if (Platform.OS === 'android') {
+  plugin = VisionCameraProxy.initFrameProcessorPlugin('androidPlugin');
+} else if (Platform.OS === 'ios') {
+  plugin = VisionCameraProxy.initFrameProcessorPlugin('iosPlugin')
+}
+
+// Runs the plugin by React Native code.
+export function runFrameProcessorPlugin(frame: Frame) {
+  'worklet'
+  if (plugin == null) throw new Error("Failed to load Frame Processor Plugin!");
+  return plugin.call(frame);
+}
+
 
 //Define the format for the Camera. We are using 800 x 600, that is more than enough for what we will be doing.
 const imageWidth = 800;
@@ -25,6 +42,8 @@ export default function CameraTest() {
       }, [hasPermission]);
 
 
+
+
     //This is the frame processor. 
     const frameProcessor = useFrameProcessor((frame:Frame) => {
       'worklet'
@@ -35,7 +54,13 @@ export default function CameraTest() {
       //As we will not need to process every frame, let's by now just run it at 2 fps. Worklets make this configuration easier for us.
       runAtTargetFps(2, () => {
         'worklet'
-        console.log(`Frame data is: ${frame.width}x${frame.height} (${frame.pixelFormat})`)
+
+        //console.log(`Frame data is: ${frame.width}x${frame.height} (${frame.pixelFormat})`)
+
+        //Run the Frame Processor Plugin
+        const result = runFrameProcessorPlugin(frame) as string;
+        console.log(`Result of the Plugin in React Native:`);
+        console.log(result);
       })
     }, []);
     
