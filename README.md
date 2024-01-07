@@ -1,8 +1,7 @@
-# Version 1 - Up to Frame Processor configuration.
+# Version 2 - Up to Frame Processor Plugin configuration.
 
 What will be added in the near future:
 
-- Frame Processor Plugin for Java and Objective-C
 - Installation of OpenCV in Java and Objective-C
 - YUV420 conversion to RGB in native code
 - Image processing in native code using OpenCV
